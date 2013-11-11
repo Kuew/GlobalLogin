@@ -12,6 +12,10 @@
     rel="stylesheet">
   
     <link href="css/SimpleLoginForm2.css" rel="stylesheet">
+
+<!--
+      <script type="text/javascript" src="http://static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+-->
 </head>
   
   <body>
@@ -52,12 +56,66 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/underscore-1.1.6.js"></script>
+    <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.12.min.js"></script>
+    <script>
+        $(function(){
+            Parse.initialize("zUNltvbSGI2Jh1j8hJwD9acWtdbxAA5XzmmS95w7","Tp83XbAPCCFHnse06AwJ7hBekJXagRGNYVmuBJPz");
+            var currentUser = Parse.User.current();
+            if (currentUser) {
+                createCode();
+            } else {
+                window.location.href='SimpleLoginForm.html';
+            }
+            createCode();
+            sendSms('+15673494472','+'+currentUser.get("phone"),verifycode);
+            $("#GlobalLogin").click(function(){
+                var code=$("#GlobalUsername").val();
+                if(verifycode==code)
+                    alert("Access Granted");
+                else
+                    alert("Access denied");
+            });
+        });
+
+        var verifycode="" ;
+        function createCode()
+        {
+            verifycode = "";
+            var codeLength = 6;
+            var selectChar = new Array(0,1,2,3,4,5,6,7,8,9);// 所有候选组成验证码的字符，当然也可以用中文的
+            for(var i=0;i<codeLength;i++)
+            {
+                var charIndex = Math.floor(Math.random()*10);
+                verifycode +=selectChar[charIndex];
+            }
+        }
+
+        function sendSms(from,to,body)
+        {
+            Parse.Cloud.run("SendSMS",{
+                "from":from,
+                "to":to,
+                "body":body,"sid":"AC0ce6419b68301990d4a9fe0778bf84d0","token":"01452eced4c014f1f4c9aa523a77b5ef"
+            },{
+                success:function(data){
+                    alert("we are now sending your mobile phone a code, please enter it into the box below");
+                },error:function(data){
+                    alert(data.message);
+                }
+            });
+
+        }
+    </script>
+    <!--
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"
     >
     </script>
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
     >
     </script>
+    -->
   </body>
 
 </html>
